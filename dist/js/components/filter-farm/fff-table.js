@@ -6,7 +6,7 @@
 var DAQView;
 (function (DAQView) {
     class FileBasedFilterFarmTable {
-        constructor(htmlRootElementName) {
+        constructor(htmlRootElementName, configuration) {
             this.DEFAULT_PRESORT_FUNCTION = FFFTableSortFunctions.BU_HOSTNAME_ASC;
             this.INITIAL_SORT_FUNCTION = FFFTableSortFunctions.BU_HOSTNAME_ASC;
             this.INITIAL_PRESORT_FUNCTION = FFFTableSortFunctions.NONE;
@@ -43,7 +43,7 @@ var DAQView;
             };
             this.htmlRootElement = document.getElementById(htmlRootElementName);
         }
-        setSnapshot(snapshot, drawPausedComponent, drawZeroDataFlowComponent, drawStaleSnapshot, url) {
+        setSnapshot(snapshot, drawPausedComponent, drawZeroDataFlowComponent, drawStaleSnapshot) {
             if (!snapshot) {
                 let msg = "";
                 let errRootElement = React.createElement(ErrorElement, { message: msg });
@@ -628,7 +628,7 @@ var DAQView;
             let buUrlDisplay = hostname;
             let buUrlDisplayClass = "fff-table-stale-member-wrapbox"; //assume stale and overwrite if not
             let buDebug = "Check problems with BU flashlist!";
-            if (bu.port != null) {
+            if (bu.port > 0) {
                 buUrlDisplay = React.createElement("a", { href: buUrl, target: "_blank" }, hostname);
                 buUrlDisplayClass = "";
                 buDebug = "";

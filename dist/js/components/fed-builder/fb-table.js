@@ -6,7 +6,7 @@
 var DAQView;
 (function (DAQView) {
     class FEDBuilderTable {
-        constructor(htmlRootElementName) {
+        constructor(htmlRootElementName, configuration) {
             this.DEFAULT_PRESORT_FUNCTION = FBTableSortFunctions.TTCP_ASC;
             this.INITIAL_SORT_FUNCTION = FBTableSortFunctions.TTCP_ASC;
             this.INITIAL_PRESORT_FUNCTION = FBTableSortFunctions.NONE;
@@ -36,7 +36,7 @@ var DAQView;
             };
             this.htmlRootElement = document.getElementById(htmlRootElementName);
         }
-        setSnapshot(snapshot, drawPausedComponent, drawZeroDataFlowComponent, drawStaleSnapshot, url) {
+        setSnapshot(snapshot, drawPausedComponent, drawZeroDataFlowComponent, drawStaleSnapshot) {
             if (!snapshot) {
                 let msg = "";
                 let errRootElement = React.createElement(ErrorElement, { message: msg });
@@ -1040,33 +1040,42 @@ var DAQView;
             let drawZeroDataFlowComponent = this.props.drawZeroDataFlowComponent;
             let subFedBuilder = this.props.subFedBuilder;
             let frlPc = subFedBuilder.frlPc;
-            let frlPcHostname = frlPc.hostname;
-            let frlPcPort = frlPc.port;
-            let frlPcName = frlPcHostname.split(".")[0];
-            frlPcName = frlPcName.indexOf('frlpc') == 0 && frlPcName.indexOf('frlpc40') == -1 ? frlPcName.substring(6) : frlPcName;
-            frlPcName = frlPcName.indexOf('frlpc40') == 0 ? frlPcName.substring(8) : frlPcName;
-            let frlPcUrl = 'http://' + frlPcHostname + ':' + frlPcPort;
-            let frls = subFedBuilder.frls;
-            let pseudoFeds = subFedBuilder.feds;
-            let frlPcUrlDisplay = frlPcName;
-            let frlPcUrlDisplayClass = "fb-table-stale-member-wrapbox"; //assume stale and overwrite if not
-            let frlPcDebug = "Check problems with FEROL_CONFIGURATION flashlist!";
+            let frlPcHostname = "";
+            let frlPcPort = 0;
+            let frlPcName = "";
+            let frlPcUrl = "";
+            let frlPcUrlDisplay = "";
+            let frlPcUrlDisplayClass = "";
+            let frlPcDebug = "";
+            if (frlPc != null) {
+                frlPcHostname = frlPc.hostname;
+                frlPcPort = frlPc.port;
+                frlPcName = frlPcHostname.split(".")[0];
+                frlPcName = frlPcName.indexOf('frlpc') == 0 && frlPcName.indexOf('frlpc40') == -1 ? frlPcName.substring(6) : frlPcName;
+                frlPcName = frlPcName.indexOf('frlpc40') == 0 ? frlPcName.substring(8) : frlPcName;
+                frlPcUrl = 'http://' + frlPcHostname + ':' + frlPcPort;
+                frlPcUrlDisplay = frlPcName;
+                frlPcUrlDisplayClass = "fb-table-stale-member-wrapbox"; //assume stale and overwrite if not
+                frlPcDebug = "Check problems with FEROL_CONFIGURATION flashlist!";
+            }
             if (frlPcPort > 0) {
                 frlPcUrlDisplay = React.createElement("a", { href: frlPcUrl, target: "_blank" }, frlPcName);
                 frlPcUrlDisplayClass = "";
                 frlPcDebug = "";
             }
+            let frls = subFedBuilder.frls;
+            let pseudoFeds = subFedBuilder.feds;
             let additionalClasses = this.props.additionalClasses;
             let className = classNames("fb-table-subfb-row", additionalClasses);
             let ttcPartition = subFedBuilder.ttcPartition;
             let ttsState = '';
             let ttsStateTcdsPm = ttcPartition.tcds_pm_ttsState ? ttcPartition.tcds_pm_ttsState.substring(0, 1) : 'x';
             let ttsStateTcdsApvPm = ttcPartition.tcds_apv_pm_ttsState ? ttcPartition.tcds_apv_pm_ttsState.substring(0, 1) : 'x';
-            if (ttcPartition.tcdsPartitionInfo && ttcPartition.tcdsPartitionInfo.nullCause) {
+            if (ttcPartition.tcdsPartitionInfo != null && ttcPartition.tcdsPartitionInfo.nullCause) {
                 ttsStateTcdsPm = ttcPartition.tcdsPartitionInfo.nullCause;
                 ttsStateTcdsApvPm = ttcPartition.tcdsPartitionInfo.nullCause;
             }
-            if (ttcPartition.topFMMInfo && ttcPartition.topFMMInfo.nullCause) {
+            if (ttcPartition.topFMMInfo != null && ttcPartition.topFMMInfo.nullCause) {
                 ttsState = ttcPartition.topFMMInfo.nullCause;
             }
             else {
@@ -1126,7 +1135,7 @@ var DAQView;
                 ttcpPercWarn = ttsState;
                 ttcpPercBusy = ttsState;
             }
-            if (ttcPartition.topFMMInfo.nullCause) {
+            if (ttcPartition.topFMMInfo != null && ttcPartition.topFMMInfo.nullCause) {
                 ttcpPercWarn = ttcPartition.topFMMInfo.nullCause;
                 ttcpPercBusy = ttcPartition.topFMMInfo.nullCause;
             }
@@ -1154,13 +1163,13 @@ var DAQView;
             }
             let frlpcStateDisplay = "";
             let frlpcStateDisplayClass = "";
-            if (frlPc.crashed) {
+            if (frlPc != null && frlPc.crashed) {
                 frlpcStateDisplay = "JobCrash";
                 frlpcStateDisplayClass = "fb-table-jobcrash";
             }
             let fmmAppStateDisplay = "";
             let fmmAppStateDisplayClass = "";
-            if (ttcPartition.fmm && ttcPartition.fmm.fmmApplication && ttcPartition.fmm.fmmApplication.crashed) {
+            if (ttcPartition.fmm != null && ttcPartition.fmm.fmmApplication && ttcPartition.fmm.fmmApplication.crashed) {
                 fmmAppStateDisplay = "JobCrash";
                 fmmAppStateDisplayClass = "fb-table-jobcrash";
             }
@@ -1342,26 +1351,31 @@ var DAQView;
                 }
             }
             let ttsStateClasses = classNames('fb-table-fed-tts-state', fedIdClasses);
-            let percentBackpressureDisplay = percentBackpressure > 0 ?
-                React.createElement("span", { className: "fb-table-fed-percent-backpressure" },
-                    '<',
-                    percentBackpressure.toFixed(1),
-                    "%") : '';
+            let percentBackpressureDisplay = '';
             let unexpectedSourceIdDisplay = '';
-            if (!(fed.frlMasked === true) && receivedSourceId != expectedSourceId && receivedSourceId != 0) {
-                unexpectedSourceIdDisplay =
-                    React.createElement("span", { className: "fb-table-fed-received-source-id" },
-                        "rcvSrcId:",
-                        receivedSourceId);
+            let fedCRCErrorDisplay = '';
+            let slinkCRCErrorDisplay = '';
+            if (displayFedId) {
+                percentBackpressureDisplay = percentBackpressure > 0 ?
+                    React.createElement("span", { className: "fb-table-fed-percent-backpressure" },
+                        '<',
+                        percentBackpressure.toFixed(1),
+                        "%") : '';
+                if (receivedSourceId != expectedSourceId && receivedSourceId != 0) {
+                    unexpectedSourceIdDisplay =
+                        React.createElement("span", { className: "fb-table-fed-received-source-id" },
+                            "rcvSrcId:",
+                            receivedSourceId);
+                }
+                fedCRCErrorDisplay = fedCRCErrors > 0 ?
+                    React.createElement("span", { className: "fb-table-fed-crc-errors" },
+                        "#FCRC=",
+                        fedCRCErrors) : '';
+                slinkCRCErrorDisplay = slinkCRCErrors > 0 ?
+                    React.createElement("span", { className: "fb-table-slink-crc-errors" },
+                        "#SCRC=",
+                        slinkCRCErrors) : '';
             }
-            let fedCRCErrorDisplay = fedCRCErrors > 0 ?
-                React.createElement("span", { className: "fb-table-fed-crc-errors" },
-                    "#FCRC=",
-                    fedCRCErrors) : '';
-            let slinkCRCErrorDisplay = slinkCRCErrors > 0 ?
-                React.createElement("span", { className: "fb-table-slink-crc-errors" },
-                    "#SCRC=",
-                    slinkCRCErrors) : '';
             return (React.createElement("span", { className: "fb-table-fed" },
                 percentWarningDisplay,
                 percentBusyDisplay,
