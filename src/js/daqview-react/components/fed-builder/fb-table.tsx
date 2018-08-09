@@ -1664,6 +1664,8 @@ namespace DAQView {
                 ttsStateDisplay = fedTTSStateLink;
             }
 
+            let fedGroup: string = fed.fedGroup;
+
             let ttsStateClass: string;
             let fedIdClasses: string = 'fb-table-fed-id';
             ttsStateClass = ttsStateDisplay.length !== 0 ? 'fb-table-fed-tts-state-' + ttsState : null;
@@ -1742,6 +1744,11 @@ namespace DAQView {
                     <span className="fb-table-slink-crc-errors">#SCRC={slinkCRCErrors}</span> : '';
             }
 
+            let fedIdDisplay: any = expectedSourceId;
+            if (fedGroup) {
+                fedIdDisplay = <span title={fedGroup}>{fedIdDisplay}</span>
+            }
+
             return (
                 <span className="fb-table-fed">
                     {percentWarningDisplay}
@@ -1750,7 +1757,7 @@ namespace DAQView {
                         {ttsStateDisplay}
                     </span>
                     <span className={fedIdClasses}>
-                        {expectedSourceId}
+                        {fedIdDisplay}
                     </span>
                     <span className={minTrigClassNames}>
                         {trigNumDisplay}
