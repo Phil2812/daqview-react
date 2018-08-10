@@ -1,5 +1,6 @@
 var snapshotSources = {
-    "url": "http://daq-expert-dev.cms:8081/DAQSnapshotService/getsnapshot"
+    "url": "http://daq-expert-dev.cms:8081/DAQSnapshotService/getsnapshot",
+    "ws": "ws://daq-expert-dev.cms:8081/DAQSnapshotService/WebSocket"
 };
 
 var daqviewLinks = {

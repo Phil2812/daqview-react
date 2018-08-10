@@ -10,6 +10,7 @@ declare namespace DAQAggregator {
     export interface SnapshotSource {
         updateInterval: number;
         getSourceURL: () => string;
+        getWebSocketURL: () => string;
         getSourceURLForGotoRequests: () => string;
         getRequestSetup: () => string;
         parseSnapshot?: (snapshot: any) => Snapshot
