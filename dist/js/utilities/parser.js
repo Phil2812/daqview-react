@@ -60,7 +60,7 @@ var DAQAggregator;
                     //upon return from an object (so that its definition has already been stored), if it has @id field, replace its definition with a reference to its @id, at parent
                     if (elemTypeLiteral != 'null') {
                         if (elem.hasOwnProperty("@id")) {
-                            if (objTypeLiteral == 'object') {
+                            if (objTypeLiteral == 'object') { //non array object
                                 obj["ref_" + key] = elem["@id"];
                                 delete obj[key];
                             }
@@ -85,7 +85,7 @@ var DAQAggregator;
             if (this.replacerRecursions > 25000) {
                 return;
             }
-            for (var key in obj) {
+            for (var key in obj) { // iterate, `key` is the property key
                 var elem = obj[key]; // `obj[key]` is the value
                 var elemTypeLiteral = SnapshotParser.getFieldType(elem);
                 //further explore objects or arrays with recursion
