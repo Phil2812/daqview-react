@@ -318,6 +318,8 @@ namespace DAQAggregator {
 
             frl_AccSlinkFullSec: number;
 
+            fedGroup: string;
+
             isPseudoFed: boolean; //variable set locally, using context information, for displays reason
         }
 
