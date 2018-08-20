@@ -28,6 +28,7 @@
     <script type="text/javascript" src="dist/lib/moment/moment.min.js"></script>
     <script type="text/javascript" src="dist/lib/bootstrap/bootstrap.min.js"></script>
     <script type="text/javascript" src="dist/lib/daterangepicker/daterangepicker.js"></script>
+    <script type="text/javascript" src="dist/lib/reconnecting-websocket/reconnecting-websocket-iife.min.js"></script>
 
     <script type="text/javascript" src="dist/js/structures/daq-aggregator/daq-snapshot.js"></script>
     <script type="text/javascript" src="dist/js/utilities/snapshot-provider.js"></script>
@@ -148,6 +149,9 @@
 
                         var ret = baseURL; //+ timestampDelim + currentTime + timestampDelim;
                         return ret;
+                    },
+                    getWebSocketURL: function() {
+                        return snapshotSources.ws + '?setup=' + daqSetup;
                     },
                     getSourceURLForGotoRequests: function () {
 

@@ -48,6 +48,10 @@ const libPaths = {
     daterangepicker_css: {
         source: paths.node_modules + "/daterangepicker/daterangepicker.css",
         target: paths.dist_lib + "/daterangepicker/"
+    },
+    reconnecting_websocket: {
+        source: paths.node_modules + "/reconnecting-websocket/dist/reconnecting-websocket-iife.min.js",
+        target: paths.dist_lib + "/reconnecting-websocket/"
     }
 };
 
