@@ -1307,6 +1307,7 @@ var DAQView;
                 fedTTSStateLink = React.createElement("a", { href: fed.fmm.url + '/urn:xdaq-application:service=fmmcontroller', target: "_blank" }, ttsStateDisplay);
                 ttsStateDisplay = fedTTSStateLink;
             }
+            let fedGroup = fed.fedGroup;
             let ttsStateClass;
             let fedIdClasses = 'fb-table-fed-id';
             ttsStateClass = ttsStateDisplay.length !== 0 ? 'fb-table-fed-tts-state-' + ttsState : null;
@@ -1379,11 +1380,15 @@ var DAQView;
                         "#SCRC=",
                         slinkCRCErrors) : '';
             }
+            let fedIdDisplay = expectedSourceId;
+            if (fedGroup) {
+                fedIdDisplay = React.createElement("span", { title: fedGroup }, fedIdDisplay);
+            }
             return (React.createElement("span", { className: "fb-table-fed" },
                 percentWarningDisplay,
                 percentBusyDisplay,
                 React.createElement("span", { className: ttsStateClasses }, ttsStateDisplay),
-                React.createElement("span", { className: fedIdClasses }, expectedSourceId),
+                React.createElement("span", { className: fedIdClasses }, fedIdDisplay),
                 React.createElement("span", { className: minTrigClassNames }, trigNumDisplay),
                 percentBackpressureDisplay,
                 unexpectedSourceIdDisplay,
