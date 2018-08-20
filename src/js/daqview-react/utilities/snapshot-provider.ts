@@ -312,7 +312,7 @@ namespace DAQAggregator {
 
                     let daq: DAQAggregatorSnapshot.DAQ = snapshot.getDAQ();
                     if (daq.fedBuilderSummary.rate == 0) {
-                        daq.fedBuilders.forEach(function (fedBuilder) {
+                        daq.fedBuilders.forEach(fedBuilder => {
                             if (fedBuilder.ru != null && fedBuilder.ru.isEVM) {
                                 if (fedBuilder.ru.stateName === "Enabled") {
                                     this.drawDataFlowIsZero = true;
