@@ -1650,12 +1650,7 @@ namespace DAQView {
             let fedCRCErrors: number = fed.numFCRCerrors;
             let slinkCRCErrors: number = fed.numSCRCerrors;
 
-            let percentWarningDisplay: any = percentWarning > 0 ?
-                <span className="fb-table-fed-percent-warning">W:{percentWarning.toFixed(1)}%</span> : '';
-            let percentBusyDisplay: any = percentBusy > 0 ?
-                <span className="fb-table-fed-percent-busy">B:{percentBusy.toFixed(1)}%</span> : '';
-
-            let ttsStateDisplay: string = (ttsState !== 'R' && ttsState.length !== 0) ? ttsState : '';
+            let ttsStateDisplay: string = '';
 
             let fedTTSStateLink: any = ttsState;
             if (fed.fmm != null && fed.fmm.url != null) {
@@ -1664,11 +1659,16 @@ namespace DAQView {
                 ttsStateDisplay = fedTTSStateLink;
             }
 
+            let displayFedGroup: boolean = fed.ttcp.name == 'MUTF';
             let fedGroup: string = fed.fedGroup;
 
             let ttsStateClass: string;
             let fedIdClasses: string = 'fb-table-fed-id';
             ttsStateClass = ttsStateDisplay.length !== 0 ? 'fb-table-fed-tts-state-' + ttsState : null;
+
+            if (ttsState !== 'R' && ttsState.length !== 0) {
+                ttsStateDisplay = ttsState;
+            }
 
             let displayFedId: boolean = false;
             let displayFedTTSState: boolean = false;
@@ -1722,31 +1722,53 @@ namespace DAQView {
 
             let ttsStateClasses: string = classNames('fb-table-fed-tts-state', fedIdClasses);
 
+            let percentWarningDisplay: any = '';
+            let percentBusyDisplay: any = '';
+
             let percentBackpressureDisplay: any = '';
             let unexpectedSourceIdDisplay: any = '';
             let fedCRCErrorDisplay: any = '';
             let slinkCRCErrorDisplay: any = '';
 
             if (displayFedId) {
-                percentBackpressureDisplay = percentBackpressure > 0 ?
-                    <span
-                        className="fb-table-fed-percent-backpressure">{'<'}{percentBackpressure.toFixed(1)}%</span> : '';
+                if (percentWarning > 0) {
+                    percentWarningDisplay =
+                        <span className="fb-table-fed-percent-warning">
+                            W:{percentWarning.toFixed(1)}%</span>;
+                }
+
+                if (percentBusy > 0) {
+                    percentBusyDisplay = <span className="fb-table-fed-percent-busy">
+                        B:{percentBusy.toFixed(1)}%</span>;
+                }
+
+                if (percentBackpressure > 0)  {
+                    percentBackpressureDisplay = <span className="fb-table-fed-percent-backpressure">
+                        {'<'}{percentBackpressure.toFixed(1)}%</span>;
+                }
 
                 if (receivedSourceId != expectedSourceId && receivedSourceId != 0) {
                     unexpectedSourceIdDisplay =
                         <span className="fb-table-fed-received-source-id">rcvSrcId:{receivedSourceId}</span>;
                 }
 
-                fedCRCErrorDisplay = fedCRCErrors > 0 ?
-                    <span className="fb-table-fed-crc-errors">#FCRC={fedCRCErrors}</span> : '';
+                if (fedCRCErrors > 0) {
+                    fedCRCErrorDisplay = <span className="fb-table-fed-crc-errors">#FCRC={fedCRCErrors}</span>;
+                }
 
-                slinkCRCErrorDisplay = slinkCRCErrors > 0 ?
-                    <span className="fb-table-slink-crc-errors">#SCRC={slinkCRCErrors}</span> : '';
+                if (slinkCRCErrors > 0) {
+                    slinkCRCErrorDisplay = <span className="fb-table-slink-crc-errors">#SCRC={slinkCRCErrors}</span>;
+                }
             }
 
+
             let fedIdDisplay: any = expectedSourceId;
+            let fedGroupDisplay: any = '';
             if (fedGroup) {
-                fedIdDisplay = <span title={fedGroup}>{fedIdDisplay}</span>
+                if (displayFedGroup) {
+                    fedGroupDisplay = <span className="fb-table-fed-group">({fedGroup})</span>;
+                }
+                fedIdDisplay = <span title={'FED Group: ' + fedGroup}>{fedIdDisplay}</span>
             }
 
             return (
@@ -1759,6 +1781,7 @@ namespace DAQView {
                     <span className={fedIdClasses}>
                         {fedIdDisplay}
                     </span>
+                    {fedGroupDisplay}
                     <span className={minTrigClassNames}>
                         {trigNumDisplay}
                     </span>
