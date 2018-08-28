@@ -5,7 +5,6 @@
  */
 var DAQAggregator;
 (function (DAQAggregator) {
-    const WEBSOCKET_CONNECTING = 0;
     class SnapshotProvider {
         constructor(snapshotSource) {
             this.running = false;
@@ -57,7 +56,7 @@ var DAQAggregator;
                 return;
             }
             this.running = true;
-            if (this.useWebSocket) {
+            if (this.useWebSocket && this.inRealTimePolling) {
                 this.connectWebSocket();
             }
             let updateFunction = (function () {
@@ -233,7 +232,7 @@ var DAQAggregator;
                     this.drawDataFlowIsZero = false;
                     let daq = snapshot.getDAQ();
                     if (daq.fedBuilderSummary.rate == 0) {
-                        daq.fedBuilders.forEach(function (fedBuilder) {
+                        daq.fedBuilders.forEach(fedBuilder => {
                             if (fedBuilder.ru != null && fedBuilder.ru.isEVM) {
                                 if (fedBuilder.ru.stateName === "Enabled") {
                                     this.drawDataFlowIsZero = true;

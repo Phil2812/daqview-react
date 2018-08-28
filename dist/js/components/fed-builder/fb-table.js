@@ -1291,26 +1291,21 @@ var DAQView;
             let receivedSourceId = fed.srcIdReceived;
             let fedCRCErrors = fed.numFCRCerrors;
             let slinkCRCErrors = fed.numSCRCerrors;
-            let percentWarningDisplay = percentWarning > 0 ?
-                React.createElement("span", { className: "fb-table-fed-percent-warning" },
-                    "W:",
-                    percentWarning.toFixed(1),
-                    "%") : '';
-            let percentBusyDisplay = percentBusy > 0 ?
-                React.createElement("span", { className: "fb-table-fed-percent-busy" },
-                    "B:",
-                    percentBusy.toFixed(1),
-                    "%") : '';
-            let ttsStateDisplay = (ttsState !== 'R' && ttsState.length !== 0) ? ttsState : '';
+            let ttsStateDisplay = '';
             let fedTTSStateLink = ttsState;
             if (fed.fmm != null && fed.fmm.url != null) {
                 fedTTSStateLink = React.createElement("a", { href: fed.fmm.url + '/urn:xdaq-application:service=fmmcontroller', target: "_blank" }, ttsStateDisplay);
                 ttsStateDisplay = fedTTSStateLink;
             }
+            let displayFedGroup = true;
             let fedGroup = fed.fedGroup;
             let ttsStateClass;
             let fedIdClasses = 'fb-table-fed-id';
             ttsStateClass = ttsStateDisplay.length !== 0 ? 'fb-table-fed-tts-state-' + ttsState : null;
+            if (ttsState !== 'R' && ttsState.length !== 0) {
+                ttsStateDisplay = ttsState;
+                displayFedGroup = true;
+            }
             let displayFedId = false;
             let displayFedTTSState = false;
             /* Masking feds with SLINK - FRL masking*/
@@ -1330,6 +1325,7 @@ var DAQView;
             }
             else {
                 ttsStateDisplay = '';
+                displayFedGroup = false;
             }
             /* display FED id */
             if (displayFedId) {
@@ -1355,40 +1351,74 @@ var DAQView;
                 }
             }
             let ttsStateClasses = classNames('fb-table-fed-tts-state', fedIdClasses);
+            let percentWarningDisplay = '';
+            let percentBusyDisplay = '';
             let percentBackpressureDisplay = '';
             let unexpectedSourceIdDisplay = '';
             let fedCRCErrorDisplay = '';
             let slinkCRCErrorDisplay = '';
             if (displayFedId) {
-                percentBackpressureDisplay = percentBackpressure > 0 ?
-                    React.createElement("span", { className: "fb-table-fed-percent-backpressure" },
+                if (percentWarning > 0) {
+                    percentWarningDisplay =
+                        React.createElement("span", { className: "fb-table-fed-percent-warning" },
+                            "W:",
+                            percentWarning.toFixed(1),
+                            "%");
+                    displayFedGroup = true;
+                }
+                if (percentBusy > 0) {
+                    percentBusyDisplay = React.createElement("span", { className: "fb-table-fed-percent-busy" },
+                        "B:",
+                        percentBusy.toFixed(1),
+                        "%");
+                    displayFedGroup = true;
+                }
+                if (percentBackpressure > 0) {
+                    percentBackpressureDisplay = React.createElement("span", { className: "fb-table-fed-percent-backpressure" },
                         '<',
                         percentBackpressure.toFixed(1),
-                        "%") : '';
+                        "%");
+                    displayFedGroup = true;
+                }
                 if (receivedSourceId != expectedSourceId && receivedSourceId != 0) {
                     unexpectedSourceIdDisplay =
                         React.createElement("span", { className: "fb-table-fed-received-source-id" },
                             "rcvSrcId:",
                             receivedSourceId);
+                    displayFedGroup = true;
                 }
-                fedCRCErrorDisplay = fedCRCErrors > 0 ?
-                    React.createElement("span", { className: "fb-table-fed-crc-errors" },
+                if (fedCRCErrors > 0) {
+                    fedCRCErrorDisplay = React.createElement("span", { className: "fb-table-fed-crc-errors" },
                         "#FCRC=",
-                        fedCRCErrors) : '';
-                slinkCRCErrorDisplay = slinkCRCErrors > 0 ?
-                    React.createElement("span", { className: "fb-table-slink-crc-errors" },
+                        fedCRCErrors);
+                    displayFedGroup = true;
+                }
+                if (slinkCRCErrors > 0) {
+                    slinkCRCErrorDisplay = React.createElement("span", { className: "fb-table-slink-crc-errors" },
                         "#SCRC=",
-                        slinkCRCErrors) : '';
+                        slinkCRCErrors);
+                    displayFedGroup = true;
+                }
             }
             let fedIdDisplay = expectedSourceId;
+            let fedGroupDisplay = '';
+            let postFedGroupDisplay = '';
             if (fedGroup) {
-                fedIdDisplay = React.createElement("span", { title: fedGroup }, fedIdDisplay);
+                if (displayFedGroup) {
+                    fedGroupDisplay = React.createElement("span", { className: "fb-table-fed-group" },
+                        fedGroup,
+                        ":");
+                    // postFedGroupDisplay = <span className="fb-table-fed-group">]</span>;
+                }
+                fedIdDisplay = React.createElement("span", { title: 'Fed Group: ' + fedGroup }, fedIdDisplay);
             }
             return (React.createElement("span", { className: "fb-table-fed" },
                 percentWarningDisplay,
                 percentBusyDisplay,
                 React.createElement("span", { className: ttsStateClasses }, ttsStateDisplay),
+                fedGroupDisplay,
                 React.createElement("span", { className: fedIdClasses }, fedIdDisplay),
+                postFedGroupDisplay,
                 React.createElement("span", { className: minTrigClassNames }, trigNumDisplay),
                 percentBackpressureDisplay,
                 unexpectedSourceIdDisplay,

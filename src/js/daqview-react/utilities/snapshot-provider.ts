@@ -8,8 +8,6 @@ declare class ReconnectingWebSocket {
     addEventListener(event: string, handler: (message: any) => void): void;
     close(code?: number, reason?: string): void;
     reconnect(code?: number, reason?: string): void;
-
-    readyState: number;
 }
 
 namespace DAQAggregator {
@@ -17,8 +15,6 @@ namespace DAQAggregator {
     import DAQSnapshotView = DAQView.DAQSnapshotView;
     import DAQAggregatorSnapshot = DAQAggregator.Snapshot;
     import SnapshotSource = DAQAggregator.SnapshotSource;
-
-    const WEBSOCKET_CONNECTING: number = 0;
 
     export class SnapshotProvider implements DAQSnapshotView {
         private snapshotSource: SnapshotSource;
@@ -94,7 +90,7 @@ namespace DAQAggregator {
             }
             this.running = true;
 
-            if (this.useWebSocket) {
+            if (this.useWebSocket && this.inRealTimePolling) {
                 this.connectWebSocket();
             }
 
